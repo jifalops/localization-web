@@ -1,0 +1,183 @@
+<link rel="import" href="../../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../header.html">
+
+<dom-module id="ranging-page">
+  <template>
+    <style include="app-styles">
+      :host {
+        display: block;
+      }
+      paper-input {
+        width: 15em;
+      }
+      paper-dropdown-menu {
+        width: 15em;
+        display: block;
+      }
+    </style>
+    <paper-material>
+      <div class="font-headline align-center">
+        Ranging
+      </div>
+    </paper-material>
+
+    <paper-material hidden$="[[auth.user.isElevated]]">
+        You do not have permission to modify the active neural network settings
+        for the app.
+    </paper-material>
+
+    <paper-material clas="layout vertical">
+      <div class="font-title">Neural Network Settings</div>
+      <p class="font-small"><a href="https://github.com/jifalops/localization#interpreted-results-nn-fields"
+        >Read more</a></p>
+      <paper-dropdown-menu
+        id="type"
+        label="Signal Type"
+        no-animations
+        noink>
+        <paper-listbox
+          class="dropdown-content"
+          attr-for-selected="value"
+          selected="{{type}}">
+          <paper-item value="rssWifi4g">WiFi 2.4 GHz RSS</paper-item>
+          <paper-item value="rssWifi5g">WiFi 5 GHz RSS</paper-item>
+          <paper-item value="rssBt">Bluetooth RSS</paper-item>
+          <paper-item value="rssBtle">Bluetooth LE RSS</paper-item>
+          <paper-item value="tofBtHci">Bluetooth HCI TOF</paper-item>
+          <paper-item value="tofBtJava">Bluetooth Java TOF</paper-item>
+        </paper-listbox>
+      </paper-dropdown-menu>
+      <paper-input
+        id="samples"
+        label="Samples (before dropping)"
+        required
+        auto-validate
+        type="number"
+        min="1"
+        max="100"
+        value="5">
+      </paper-input>
+      <paper-input
+        id="drop"
+        label="Drop (from high and low)"
+        required
+        auto-validate
+        type="number"
+        min="0"
+        max="10"
+        value="1">
+      </paper-input>
+      <paper-dropdown-menu
+        id="method"
+        label="Method"
+        no-animations
+        noink>
+        <paper-listbox
+          class="dropdown-content"
+          attr-for-selected="value"
+          selected="{{method}}">
+          <paper-item value="median">median</paper-item>
+          <paper-item value="mean">mean</paper-item>
+        </paper-listbox>
+      </paper-dropdown-menu>
+      <paper-dropdown-menu
+        hidden$="[[isTof]]"
+        id="rssInputs"
+        label="Inputs"
+        no-animations
+        noink>
+        <paper-listbox
+          class="dropdown-content"
+          attr-for-selected="value"
+          selected="{{rssInputs}}">
+          <paper-item value="1">RSS</paper-item>
+          <paper-item value="2">RSS, freq</paper-item>
+          <paper-item value="3">RSS, freq, width</paper-item>
+        </paper-listbox>
+      </paper-dropdown-menu>
+      <paper-input
+        id="hiddenNeurons"
+        label="Hidden neurons"
+        required
+        auto-validate
+        type="number"
+        min="1"
+        max="10"
+        value="1">
+      </paper-input>
+      <paper-input
+        hidden$="[[isBt]]"
+        id="wifiMaxRange"
+        label="Max range"
+        required
+        auto-validate
+        type="number"
+        min="10"
+        max="100"
+        value="100">
+      </paper-input>
+      <paper-input
+        hidden$="[[!isBt]]"
+        id="btMaxRange"
+        label="Max range"
+        required
+        auto-validate
+        type="number"
+        min="5"
+        max="20"
+        value="10">
+      </paper-input>
+      <paper-textarea
+        id="weights"
+        required
+        char-counter
+        label="Weights (comma delimited, no spaces or quotes)"
+        minlength="7"
+        maxlength="1000">
+      </paper-textarea>
+      <paper-button class="primary-button" raised on-tap="_activateSettings">Activate</paper-button>
+    </paper-material>
+  </template>
+
+  <script>
+  Polymer({
+    is: 'ranging-page',
+    properties: {
+      auth: Object,
+      isTof: {
+        type: Boolean,
+        value: false,
+        computed: '_isTof(type)'
+      },
+      isBt: {
+        type: Boolean,
+        value: false,
+        computed: '_isBt(type)'
+      }
+    },
+
+    _activateSettings: function() {
+        var samples = this.$.samples.value;
+        var drop = this.$.drop.value;
+        var inputs = this.isTof ? 1 : this.$.rssInputs.value;
+        var hidden = this.$.hiddenNeurons.value;
+        var maxRange = this.isBt ? this.$.btMaxRange.value : this.$.wifiMaxRange.value;
+        var weights = this.$.weights.value;
+        LOG && log.v(this.type, samples, drop, this.method, inputs, hidden, maxRange, weights);
+    },
+
+    _isTof: function(type) {
+      return type && type.toLowerCase().includes('tof');
+    },
+    _isBt: function(type) {
+      return type && type.toLowerCase().includes('bt');
+    }
+  });
+  </script>
+</dom-module>

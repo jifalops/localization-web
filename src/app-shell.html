@@ -106,8 +106,11 @@
           <app-logo></app-logo>
         </app-toolbar>
         <paper-listbox selected="[[routeData.page]]" attr-for-selected="name" role="navigation">
-          <paper-item name="users">
+          <paper-item name="raw-samples">
             <a plain class="flex" href="/raw-samples/rss">Raw Samples</a>
+          </paper-item>
+          <paper-item name="ranging">
+            <a plain class="flex" href="/ranging">Ranging</a>
           </paper-item>
           <div class="divider"></div>
           <paper-item name="admin">
@@ -154,6 +157,9 @@
           <neon-animated-pages role="main" selected="[[routeData.page]]" attr-for-selected="name">
             <neon-animatable name="raw-samples">
               <raw-samples-page auth="[[auth]]" route="[[subroute]]"></raw-samples-page>
+            </neon-animatable>
+            <neon-animatable name="ranging">
+              <ranging-page auth="[[auth]]" route="[[subroute]]"></ranging-page>
             </neon-animatable>
             <neon-animatable name="login">
               <login-register-page id="loginPage" auth="[[auth]]" on-login-register="loginRegister"></login-register-page>
@@ -254,6 +260,7 @@
         case 'test':       return '/src/pages/test/test-page.html';
         case 'messages':   return '/src/pages/messages/messages-page.html';
         case 'raw-samples': return '/src/pages/raw-samples/raw-samples-page.html';
+        case 'ranging':    return '/src/pages/ranging/ranging-page.html';
       }
     },
 
