@@ -1,0 +1,64 @@
+//
+// raw-samples.bolt
+//
+
+path /rssWiFi4g is RssSampleRaw {
+  read() { true }
+}
+path /rssWiFi5g is RssSampleRaw {
+  read() { true }
+}
+path /rssBt is RssSampleRaw {
+  read() { true }
+}
+path /rssBtle is RssSampleRaw {
+  read() { true }
+}
+path /tofBtHci is TofSampleRaw {
+  read() { true }
+}
+path /TofBtJava is RssSampleRaw {
+  read() { true }
+}
+
+type RssSampleRaw {
+  id1: IdString   // Local device
+  id2: IdString   // Remote device
+  rss: Rss
+  freq: RssFrequency
+  width: ChannelWidth
+  dist: Distance
+  create() { amAuthed() }
+}
+
+type TofSampleRaw {
+  id1: IdString   // Local device
+  id2: IdString   // Remote device
+  tof: Tof        // Time of flight in nanoseconds
+  dist: Distance
+  create() { amAuthed() }
+}
+
+type IdString extends String {
+  validate() { this.length >= 3 && this.length <= 24 }
+}
+
+type Rss extends Number {
+  validate() { this >= -120 && this <= 0 }
+}
+
+type RssFrequency extends Number {
+  validate() { this >= 200 && this <= 10000 }
+}
+
+type ChannelWidth extends Number {
+  validate() { this >= 1 && this <= 1000 }
+}
+
+type Distance extends Number {
+  validate() { this >= 0 && this <= 100 }
+}
+
+type Tof extends Number {
+  validate() { this >= 1 && this <= 100000000 }
+}

@@ -1,0 +1,123 @@
+<link rel="import" href="../../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../../../bower_components/iron-collapse-button/iron-collapse-button.html">
+<link rel="import" href="../../header.html">
+
+<dom-module id="raw-samples-tof">
+  <template>
+
+    <style include="app-styles">
+      :host {
+        display: block;
+      }
+      iron-list {
+        height: calc(100vh - 296px);
+        max-height: 400px;
+        @apply --font-small;
+      }
+      iron-collapse-button {
+        margin-top: 24px;
+        @apply --font-small;
+      }
+      .list-item {
+
+      }
+      .device-id {
+        @apply --font-tiny;
+      }
+      .rss {
+
+      }
+      .freq {
+
+      }
+      .width {
+
+      }
+      .dist {
+
+      }
+    </style>
+
+    <firebase-query
+      path="/tofBtHci"
+      data="{{tofBtHci}}"
+      limit-to-last="100">
+    </firebase-query>
+    <firebase-query
+      path="/tofBtJava"
+      data="{{tofBtJava}}"
+      limit-to-last="100">
+    </firebase-query>
+
+    <!-- BT HCI -->
+    <paper-material>
+      <iron-collapse-button opened>
+        <div slot="collapse-trigger" class="flex font-title">
+          Bluetooth HCI
+        </div>
+        <div slot="collapse-content">
+          <iron-list
+            id="btHciList"
+            items="[[tofBtHci]]">
+            <template>
+                <div class="list-item layout horizontal center justified">
+                  <span class="device-id">[[_shortenId(item.id1)]]</span>
+                  <span class="device-id">[[_shortenId(item.id2)]]</span>
+                  <span class="rss">[[item.rss]] dBm</span>
+                  <span class="dist">[[round(item.dist)]] m</span>
+                </div>
+            </template>
+          </iron-list>
+        </div>
+      </iron-collapse-button>
+    </paper-material>
+
+    <!-- BT Java -->
+    <paper-material>
+      <iron-collapse-button opened>
+        <div slot="collapse-trigger" class="flex font-title">
+          Bluetooth Java
+        </div>
+        <div slot="collapse-content">
+          <iron-list
+            id="btJavaList"
+            items="[[tofBtJava]]">
+            <template>
+                <div class="list-item layout horizontal center justified">
+                  <span class="device-id">[[_shortenId(item.id1)]]</span>
+                  <span class="device-id">[[_shortenId(item.id2)]]</span>
+                  <span class="rss">[[item.rss]] dBm</span>
+                  <span class="dist">[[round(item.dist)]] m</span>
+                </div>
+            </template>
+          </iron-list>
+        </div>
+      </iron-collapse-button>
+    </paper-material>
+  </template>
+
+  <script>
+  Polymer({
+    is: 'raw-samples-tof',
+    properties: {
+      auth: Object
+    },
+    notifyResize: function() {
+      this.$.btHciList.notifyResize();
+      this.$.btJavaList.notifyResize();
+    },
+    // TODO behavior
+    _round: function(n) {
+      return round(n, 1)
+    },
+
+    _shortenId: function(id) {
+      if (id) return id.slice(0, 2) + '..' + id.slice(-2);
+    }
+
+  });
+  </script>
+
+</dom-module>

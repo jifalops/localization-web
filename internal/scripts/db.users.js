@@ -18,16 +18,6 @@ db.users = {
     db.update(updates, onSuccess, onFailure);
   },
 
-  updateLocation: function(user, lat, lng, onSuccess, onFailure) {
-    DB && console.log('Updating location to', lat, lng);
-    var geofire = new GeoFire(db.ref('/geoUsers'));
-    geofire.set(user, [lat, lng]).then(function () {
-      if (onSuccess) onSuccess();
-    }, function (error) {
-      if (onFailure) onFailure(error);
-    });
-  },
-
   changeDisplayName: function (user, name, onSuccess, onFailure) {
     DB && console.log('Changing display name to ' + name);
     var updates = db.userActionUpdate(user);

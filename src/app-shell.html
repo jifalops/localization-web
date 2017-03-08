@@ -107,23 +107,20 @@
         </app-toolbar>
         <paper-listbox selected="[[routeData.page]]" attr-for-selected="name" role="navigation">
           <paper-item name="users">
-            <a plain class="flex" href="/users/list">Users</a>
+            <a plain class="flex" href="/raw-samples/rss">Raw Samples</a>
+          </paper-item>
+          <div class="divider"></div>
+          <paper-item name="admin">
+            <a plain class="flex" href="/admin">Admin</a>
           </paper-item>
           <div class="divider"></div>
           <paper-item name="messages">
             <a plain class="flex" href="/messages">Messages</a>
           </paper-item>
-
-          <div class="divider"></div>
-          <paper-item name="admin">
-            <a plain class="flex" href="/admin">Admin</a>
-          </paper-item>
-
           <div class="divider"></div>
           <paper-item name="test">
             <a plain class="flex" href="/test">Test page</a>
           </paper-item>
-
           <div class="divider"></div>
           <paper-item name="feedback">
             <a plain class="flex" href="/feedback">Feedback</a>
@@ -155,8 +152,8 @@
         <div id="content" class="layout vertical">
           <!-- <div class="success-banner">Success banner</div> -->
           <neon-animated-pages role="main" selected="[[routeData.page]]" attr-for-selected="name">
-            <neon-animatable name="users">
-              <users-page app="[[app]]" auth="[[auth]]" route="[[subroute]]"></users-page>
+            <neon-animatable name="raw-samples">
+              <raw-samples-page auth="[[auth]]" route="[[subroute]]"></raw-samples-page>
             </neon-animatable>
             <neon-animatable name="login">
               <login-register-page id="loginPage" auth="[[auth]]" on-login-register="loginRegister"></login-register-page>
@@ -234,7 +231,7 @@
 
       var file = this._fileForPage(page);
       if (!page || !file) {
-        redirect('/users/list');
+        redirect('/raw-samples/rss');
         return;
       }
 
@@ -249,7 +246,6 @@
 
     _fileForPage: function(page) {
       switch (page) {
-        case 'users':      return '/src/pages/users/users-page.html';
         case 'user':       return '/src/pages/user/user-page.html';
         case 'login':      return '/src/pages/login-register/login-register-page.html';
         case 'register':   return '/src/pages/login-register/login-register-page.html';
@@ -257,6 +253,7 @@
         case 'admin':      return '/src/pages/admin/admin-page.html';
         case 'test':       return '/src/pages/test/test-page.html';
         case 'messages':   return '/src/pages/messages/messages-page.html';
+        case 'raw-samples': return '/src/pages/raw-samples/raw-samples-page.html';
       }
     },
 

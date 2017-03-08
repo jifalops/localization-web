@@ -9,7 +9,6 @@
 var DB = true;
 var AUTH = false;
 var ROUTE = false;
-var GEOFIRE = false;
 
 function fire(context, name, data, options) {
   options = options || {};
@@ -36,7 +35,7 @@ function goBack() {
       }
     }
   }
-  redirect('/users/list');
+  redirect('/raw-samples/rss');
 }
 
 /*

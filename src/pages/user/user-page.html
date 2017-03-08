@@ -100,7 +100,7 @@
     <div class="font-subhead">Login methods</div>
     <div class="layout horizontal center justified wrap">
       <span>[[join(_providers, '\, ')]]</span>
-      <span hidden$="[[!_hasUsernameProviderOnly(_providers)]]" class="warning font-small">
+      <span hidden$="[[!_hasUsernameProviderOnly(_providers)]]" class="color-warning bgcolor-warning font-small">
         Add a second login method to access your account if you forget the password.
       </span>
       <div class="add-provider font-small layout horizontal center">
@@ -111,7 +111,7 @@
           <iron-image src="/images/google-icon.svg"></iron-image>
           Google
         </div>
-        <div class="layout vertical center"
+        <!-- <div class="layout vertical center"
           hidden$="[[includes(_providers, 'Facebook')]]"
           on-tap="_linkFacebook">
           <iron-image src="/images/facebook-icon.svg"></iron-image>
@@ -128,7 +128,7 @@
           on-tap="_linkGithub">
           <iron-image src="/images/github-icon.svg"></iron-image>
           Github
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="font-subhead">Created</div>
