@@ -9,7 +9,7 @@ importScripts('/bower_components/firebase/firebase-messaging.js');
 // messagingSenderId.
 firebase.initializeApp({
   // TODO set this to your messaging sender ID
-  'messagingSenderId': '435083496955'
+  'messagingSenderId': '10794791185'
 });
 
 // Retrieve an instance of Firebase Messaging so that it can handle background

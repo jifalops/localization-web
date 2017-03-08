@@ -1,7 +1,7 @@
 {
-  "name": "app-starter",
+  "name": "localization-web",
   "version": "0.1.0",
-  "description": "A starting point for using Polymer, Firebase, Geofire, and username/provider logins.",
+  "description": "Web interface for the Android app.",
   "scripts": {
     "build": "gulp"
   },
