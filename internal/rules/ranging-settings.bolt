@@ -1,0 +1,75 @@
+//
+// ranging-settings.bolt
+//
+
+path /rssWiFi4gSettings {
+  read() { amModerator() }
+  /{settings} is RangingSettings;
+}
+path /rssWiFi5gSettings {
+  read() { amModerator() }
+  /{settings} is RangingSettings;
+}
+path /rssBtSettings {
+  read() { amModerator() }
+  /{settings} is RangingSettings;
+}
+path /rssBtleSettings {
+  read() { amModerator() }
+  /{settings} is RangingSettings;
+}
+path /tofBtHciSettings {
+  read() { amModerator() }
+  /{settings} is RangingSettings;
+}
+path /tofBtJavaSettings {
+  read() { amModerator() }
+  /{settings} is RangingSettings;
+}
+
+path /activeRssWifi4gSettings is RangingSettingsRef;
+path /activeRssWifi5gSettings is RangingSettingsRef;
+path /activeRssBtSettings is RangingSettingsRef;
+path /activeRssBtleSettings is RangingSettingsRef;
+path /activeTofBtHciSettings is RangingSettingsRef;
+path /activeTofBtJavaSettings is RangingSettingsRef;
+
+type RangingSettings {
+  samples: SamplesSetting
+  dropHigh: SamplesToDrop
+  dropLow: SamplesToDrop
+  method: CombineMethod
+  inputs: NnInputs
+  hidden: NnHidden
+  maxRange: MaxRange
+  weights: NnWeights
+  read() { amAuthed() }
+  write() { amModerator() }
+}
+
+type RangingSettingsRef extends FirebaseKey {
+  read() { amAuthed() }
+  write() { amModerator() }
+}
+
+type SamplesSetting extends Number {
+  validate() { this >= 1 && this <= 100 }
+}
+type CombineMethod extends String {
+  validate() { this.test(/^(median|mean|min|max)$/) }
+}
+type SamplesToDrop extends Number {
+  validate() { this >= 0 && this <= 10 }
+}
+type NnInputs extends Number {
+  validate() { this >= 1 && this <= 3 }
+}
+type NnHidden extends Number {
+  validate() { this >= 1 && this <= 10 }
+}
+type MaxRange extends Number {
+  validate() { this >= 5 && this <= 100 }
+}
+type NnWeights extends String {
+  validate() { this.test(/^[0-9,\.\-]{7,1000}$/) }
+}

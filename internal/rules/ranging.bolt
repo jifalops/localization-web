@@ -1,0 +1,54 @@
+//
+// ranging.bolt
+//
+
+path /rssWiFi4gRanging/{settings} {
+  read() { true }
+  /{range} is WifiRssRange;
+}
+path /rssWiFi5gRanging/{settings} {
+  read() { true }
+  /{range} is WifiRssRange;
+}
+path /rssBtRanging/{settings} {
+  read() { true }
+  /{range} is RssRange;
+}
+path /rssBtleRanging/{settings} {
+  read() { true }
+  /{range} is BtleRssRange;
+}
+path /tofBtHciRanging/{settings} {
+  read() { true }
+  /{range} is TofRange;
+}
+path /tofBtJavaRanging/{settings} {
+  read() { true }
+  /{range} is TofRange;
+}
+
+type Range {
+  id1: IdString   // Local device
+  id2: IdString   // Remote device
+  dist: Distance  // Actual distance
+  range: Distance
+  fspl: Distance
+  create() { amAuthed() }
+}
+
+type RssRange extends Range {
+  rss: Rss
+}
+
+type BtleRssRange extends RssRange {
+  txPower: TxPower
+}
+
+type WifiRssRange extends RssRange {
+  freq: WifiFrequency
+  width: ChannelWidth
+}
+
+type TofRange extends Range {
+  tof: Tof  // Time of flight in nanoseconds
+}

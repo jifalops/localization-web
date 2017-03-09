@@ -1,0 +1,82 @@
+//
+// samples.bolt
+//
+
+path /rssWiFi4gSamples {
+  read() { true }
+  /{sample} is WifiRssSample;
+}
+path /rssWiFi5gSamples {
+  read() { true }
+  /{sample} is WifiRssSample;
+}
+path /rssBtSamples {
+  read() { true }
+  /{sample} is RssSample;
+}
+path /rssBtleSamples {
+  read() { true }
+  /{sample} is BtleRssSample;
+}
+path /tofBtHciSamples {
+  read() { true }
+  /{sample} is TofSample;
+}
+path /tofBtJavaSamples {
+  read() { true }
+  /{sample} is TofSample;
+}
+
+type Sample {
+  id1: IdString   // Local device
+  id2: IdString   // Remote device
+  dist: Distance
+  create() { amAuthed() }
+}
+
+type RssSample extends Sample {
+  rss: Rss
+}
+
+type BtleRssSample extends RssSample {
+  txPower: TxPower
+}
+
+type WifiRssSample extends RssSample {
+  freq: WifiFrequency
+  width: ChannelWidth
+}
+
+type TofSample extends Sample {
+  tof: Tof  // Time of flight in nanoseconds
+}
+
+
+
+type IdString extends String {
+  validate() { this.length >= 3 && this.length <= 24 }
+}
+
+type Rss extends Number {
+  validate() { this >= -120 && this <= 0 }
+}
+
+type WifiFrequency extends Number {
+  validate() { this >= 200 && this <= 10000 }
+}
+
+type ChannelWidth extends Number {
+  validate() { this >= 1 && this <= 1000 }
+}
+
+type TxPower extends Number {
+  validate() { this >= -100 && this <= 1000 }
+}
+
+type Distance extends Number {
+  validate() { this >= 0 && this <= 100 }
+}
+
+type Tof extends Number {
+  validate() { this >= 1 && this <= 100000000 }
+}
