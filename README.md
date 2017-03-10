@@ -2,7 +2,7 @@
 Web interface for the [Android app](https://github.com/jifalops/localization).
 
 
-Try it at https://localization-web-7535f.firebaseapp.com
+Try it at https://localization-7535f.firebaseapp.com
 
 ## Purpose
 View data submitted by the companion app and specify certain app settings.
