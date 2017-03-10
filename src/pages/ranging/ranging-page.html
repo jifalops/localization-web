@@ -5,6 +5,7 @@
 <link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../header.html">
 
 <dom-module id="ranging-page">
@@ -12,13 +13,52 @@
     <style include="app-styles">
       :host {
         display: block;
-      }
-      paper-input {
-        width: 15em;
+        @apply --font-small;
       }
       paper-dropdown-menu {
-        width: 15em;
-        display: block;
+        width: 10em;
+        --paper-input-container-input: {
+          text-align: center;
+          @apply --font-small;
+        };
+        --paper-input-container-label: {
+          text-align: center;
+          @apply --font-small;
+        };
+        --iron-icon-width: 16px;
+        --iron-icon-height: 16px;
+      }
+      paper-input {
+        display: inline-block;
+        width: 4em;
+        --paper-input-container-label: {
+          @apply --font-small;
+          text-align: center;
+        };
+        --paper-input-container-input: {
+          @apply --font-small;
+          text-align: center;
+        };
+      }
+      paper-item {
+        --paper-item: {
+          @apply --font-small;
+          text-align: center;
+        };
+      }
+      paper-textarea {
+        --paper-input-container-label: {
+          @apply --font-small;
+        };
+        --paper-input-container-input: {
+          @apply --font-small;
+        };
+      }
+      paper-checkbox {
+        --paper-checkbox-size: 14px;
+        --paper-checkbox-label-spacing: 4px;
+        @apply --font-small;
+        margin: 8px 0 16px;
       }
     </style>
     <paper-material>
@@ -27,35 +67,40 @@
       </div>
     </paper-material>
 
-    <paper-material hidden$="[[auth.user.isElevated]]">
-        You do not have permission to modify the active neural network settings
-        for the app.
+    <paper-material hidden$="[[auth.user.isElevated]]" class="bgcolor-warning">
+        You must have elevated permissions to modify the app's neural network settings.<br/>
+        If you do have access you can elevate on your profile page.
     </paper-material>
 
-    <paper-material clas="layout vertical">
+    <paper-material>
       <div class="font-title">Neural Network Settings</div>
-      <p class="font-small"><a href="https://github.com/jifalops/localization#interpreted-results-nn-fields"
+      <p class="font-small"><a href="https://github.com/jifalops/localization#refiningparams-from-database"
         >Read more</a></p>
       <paper-dropdown-menu
         id="type"
         label="Signal Type"
         no-animations
+        required
+        auto-validate
         noink>
         <paper-listbox
           class="dropdown-content"
           attr-for-selected="value"
           selected="{{type}}">
-          <paper-item value="rssWifi4g">WiFi 2.4 GHz RSS</paper-item>
-          <paper-item value="rssWifi5g">WiFi 5 GHz RSS</paper-item>
-          <paper-item value="rssBt">Bluetooth RSS</paper-item>
-          <paper-item value="rssBtle">Bluetooth LE RSS</paper-item>
-          <paper-item value="tofBtHci">Bluetooth HCI TOF</paper-item>
-          <paper-item value="tofBtJava">Bluetooth Java TOF</paper-item>
+          <paper-item value="rssWifi4gSettings">WiFi 2.4 GHz RSS</paper-item>
+          <paper-item value="rssWifi5gSettings">WiFi 5 GHz RSS</paper-item>
+          <paper-item value="rssBtSettings">Bluetooth RSS</paper-item>
+          <paper-item value="rssBtleSettings">Bluetooth LE RSS</paper-item>
+          <paper-item value="tofBtHciSettings">Bluetooth HCI TOF</paper-item>
+          <paper-item value="tofBtJavaSettings">Bluetooth Java TOF</paper-item>
         </paper-listbox>
-      </paper-dropdown-menu>
+      </paper-dropdown-menu><br />
+      
+      Collect
+      
       <paper-input
         id="samples"
-        label="Samples (before dropping)"
+        label="1-100"
         required
         auto-validate
         type="number"
@@ -63,9 +108,12 @@
         max="100"
         value="5">
       </paper-input>
+      
+      samples,<br/> drop
+      
       <paper-input
-        id="drop"
-        label="Drop (from high and low)"
+        id="dropHigh"
+        label="0-10"
         required
         auto-validate
         type="number"
@@ -73,10 +121,28 @@
         max="10"
         value="1">
       </paper-input>
+      
+      of the highest, <br/> and
+      
+      <paper-input
+        id="dropLow"
+        label="0-10"
+        required
+        auto-validate
+        type="number"
+        min="0"
+        max="10"
+        value="1">
+      </paper-input>
+      
+      of the lowest. <br/> Then apply
+      
       <paper-dropdown-menu
         id="method"
-        label="Method"
+        label="method"
         no-animations
+        required
+        auto-validate
         noink>
         <paper-listbox
           class="dropdown-content"
@@ -84,23 +150,51 @@
           selected="{{method}}">
           <paper-item value="median">median</paper-item>
           <paper-item value="mean">mean</paper-item>
+          <paper-item value="min">min</paper-item>
+          <paper-item value="max">max</paper-item>
         </paper-listbox>
       </paper-dropdown-menu>
+      
+      to refine the samples down to one.
+      
+      <p>Finally, calculate the range using these neural network settings.</p>
+      
       <paper-dropdown-menu
-        hidden$="[[isTof]]"
-        id="rssInputs"
+        hidden$="[[isBt]]"
+        id="wifiInputs"
         label="Inputs"
         no-animations
+        required
+        auto-validate
         noink>
         <paper-listbox
           class="dropdown-content"
           attr-for-selected="value"
-          selected="{{rssInputs}}">
+          selected="{{wifiInputs}}">
           <paper-item value="1">RSS</paper-item>
           <paper-item value="2">RSS, freq</paper-item>
           <paper-item value="3">RSS, freq, width</paper-item>
         </paper-listbox>
       </paper-dropdown-menu>
+      <paper-dropdown-menu
+        hidden$="[[!isBtle]]"
+        id="btleInputs"
+        label="Inputs"
+        no-animations
+        required
+        auto-validate
+        noink>
+        <paper-listbox
+          class="dropdown-content"
+          attr-for-selected="value"
+          selected="{{btleInputs}}">
+          <paper-item value="1">RSS</paper-item>
+          <paper-item value="2">RSS, TX Power</paper-item>
+        </paper-listbox>
+      </paper-dropdown-menu>
+      
+      <span hidden="[[!_hasOneInput(isBt, isBtle)]]">1 input</span>
+      
       <paper-input
         id="hiddenNeurons"
         label="Hidden neurons"
@@ -132,7 +226,8 @@
         min="5"
         max="20"
         value="10">
-      </paper-input>
+      </paper-input>m
+      
       <paper-textarea
         id="weights"
         required
@@ -141,7 +236,8 @@
         minlength="7"
         maxlength="1000">
       </paper-textarea>
-      <paper-button class="primary-button" raised on-tap="_activateSettings">Activate</paper-button>
+      <paper-checkbox checked="{{activate}}">Make these the active settings</paper-checkbox><br/>
+      <paper-button class="primary-button" raised on-tap="_createSettings">Create</paper-button>
     </paper-material>
   </template>
 
@@ -159,17 +255,45 @@
         type: Boolean,
         value: false,
         computed: '_isBt(type)'
+      },
+      isBtle: {
+        type: Boolean,
+        value: false,
+        computed: '_isBtle(type)'
       }
     },
 
-    _activateSettings: function() {
-        var samples = this.$.samples.value;
-        var drop = this.$.drop.value;
-        var inputs = this.isTof ? 1 : this.$.rssInputs.value;
-        var hidden = this.$.hiddenNeurons.value;
-        var maxRange = this.isBt ? this.$.btMaxRange.value : this.$.wifiMaxRange.value;
+    _createSettings: function() {
+      if (this.auth && this._validate()) {
+        var samples = Number(this.$.samples.value);
+        var dropHigh = Number(this.$.dropHigh.value);
+        var dropLow = Number(this.$.dropLow.value);
+        var inputs = Number(this.isBt ? (this.isBtle ? this.btleInputs : 1) : this.wifiInputs);
+        var hidden = Number(this.$.hiddenNeurons.value);
+        var maxRange = Number(this.isBt ? this.$.btMaxRange.value : this.$.wifiMaxRange.value);
         var weights = this.$.weights.value;
-        LOG && log.v(this.type, samples, drop, this.method, inputs, hidden, maxRange, weights);
+        LOG && log.v(this.type, samples, dropHigh, dropLow, this.method, inputs, hidden, maxRange, this.activate, weights);
+        
+        var settings = {
+          samples: samples,
+          dropHigh: dropHigh,
+          dropLow: dropLow,
+          method: this.method,
+          inputs: inputs,
+          hidden: hidden,
+          maxRange: maxRange,
+          weights: weights
+        };
+        var key = db.ranging.createSettings(this.auth.uid, this.type, settings, function() {
+          if (this.activate) {
+            db.ranging.activateSettings(this.auth.uid, 'active' + ucFirst(this.type), key, function() {
+              showSuccessToast('Settings activated');
+            }, showServerErrorToast);
+          } else {
+            showSuccessToast('Settings created');
+          }
+        }.bind(this), showServerErrorToast);
+      }
     },
 
     _isTof: function(type) {
@@ -177,6 +301,25 @@
     },
     _isBt: function(type) {
       return type && type.toLowerCase().includes('bt');
+    },
+    _isBtle: function(type) {
+      return type && type.toLowerCase().includes('btle');
+    },
+    _hasOneInput: function(isBt, isBtle) {
+      return isBt && !isBtle;
+    },
+    
+    _validate: function() {
+      return this.$.type.validate()
+        && this.$.samples.validate()
+        && this.$.dropHigh.validate()
+        && this.$.dropLow.validate()
+        && (this.$.wifiInputs.validate() || this.$.btleInputs.validate() || (this.isBt && !this.isBtle))
+        && this.$.hiddenNeurons.validate()
+        && (this.$.wifiMaxRange.validate() || this.$.btMaxRange.validate())
+        && this.$.weights.validate()
+        && this.type
+        && this.method;
     }
   });
   </script>

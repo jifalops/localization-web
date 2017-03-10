@@ -2,28 +2,28 @@
 // ranging-settings.bolt
 //
 
-path /rssWiFi4gSettings {
-  read() { amModerator() }
+path /rssWifi4gSettings {
+  read() { true }
   /{settings} is RangingSettings;
 }
-path /rssWiFi5gSettings {
-  read() { amModerator() }
+path /rssWifi5gSettings {
+  read() { true }
   /{settings} is RangingSettings;
 }
 path /rssBtSettings {
-  read() { amModerator() }
+  read() { true }
   /{settings} is RangingSettings;
 }
 path /rssBtleSettings {
-  read() { amModerator() }
+  read() { true }
   /{settings} is RangingSettings;
 }
 path /tofBtHciSettings {
-  read() { amModerator() }
+  read() { true }
   /{settings} is RangingSettings;
 }
 path /tofBtJavaSettings {
-  read() { amModerator() }
+  read() { true }
   /{settings} is RangingSettings;
 }
 
@@ -43,7 +43,7 @@ type RangingSettings {
   hidden: NnHidden
   maxRange: MaxRange
   weights: NnWeights
-  read() { amAuthed() }
+  read() { true }
   write() { amModerator() }
 }
 
@@ -71,5 +71,5 @@ type MaxRange extends Number {
   validate() { this >= 5 && this <= 100 }
 }
 type NnWeights extends String {
-  validate() { this.test(/^[0-9,\.\-]{7,1000}$/) }
+  validate() { this.test(/^[0-9,.-]{7,1000}$/) }
 }
