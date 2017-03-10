@@ -1,328 +1,74 @@
-<link rel="import" href="../../../bower_components/paper-material/paper-material.html">
-<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../../bower_components/iron-collapse-button/iron-collapse-button.html">
-<link rel="import" href="../../../bower_components/iron-list/iron-list.html">
-<link rel="import" href="../../../bower_components/polymerfire/firebase-query.html">
-<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../../../bower_components/neon-animation/neon-animatable.html">
+<link rel="import" href="../../../bower_components/neon-animation/neon-animations.html">
 <link rel="import" href="../../header.html">
-<link rel="import" href="ranging-settings.html">
 
 <dom-module id="ranging-page">
   <template>
-    <style include="app-styles">
+    <style>
       :host {
         display: block;
-        /*@apply --font-small;*/
-      }
-      iron-list {
-        height: calc(100vh - 296px);
-        max-height: 200px;
-        @apply --font-small;
-      }
-      iron-collapse-button {
-        margin-top: 24px;
-        @apply --font-small;
-      }
-      .list-item {
-        @apply --font-small;
-        padding: 4px 2px;
-      }
-      .list-item.true {
-        background-color: var(--success-bg-color);
-      }
-      .list-item a {
-        float: right;
-      }
-      .weights {
-        @apply --font-tiny;
       }
     </style>
     
-    <firebase-query
-      path="/rssWifi4gSettings"
-      data="{{rssWifi4g}}"
-      limit-to-last="100">
-    </firebase-query>
-    <firebase-query
-      path="/rssWifi5gSettings"
-      data="{{rssWifi5g}}"
-      limit-to-last="100">
-    </firebase-query>
-    <firebase-query
-      path="/rssBtSettings"
-      data="{{rssBt}}"
-      limit-to-last="100">
-    </firebase-query>
-    <firebase-query
-      path="/rssBtleSettings"
-      data="{{rssBtle}}"
-      limit-to-last="100">
-    </firebase-query>
-    <firebase-query
-      path="/tofBtHciSettings"
-      data="{{tofBtHci}}"
-      limit-to-last="100">
-    </firebase-query>
-    <firebase-query
-      path="/tofBtJavaSettings"
-      data="{{tofBtJava}}"
-      limit-to-last="100">
-    </firebase-query>
+    <app-route
+      route="[[route]]"
+      pattern="/:page"
+      data="{{routeData}}"
+      tail="{{subroute}}">
+    </app-route>
     
-    <firebase-document
-      path="/activeRssWifi4gSettings"
-      data="{{activeRssWifi4g}}">
-    </firebase-document>
-    <firebase-document
-      path="/activeRssWifi5gSettings"
-      data="{{activeRssWifi5g}}">
-    </firebase-document>
-    <firebase-document
-      path="/activeRssBtSettings"
-      data="{{activeRssBt}}">
-    </firebase-document>
-    <firebase-document
-      path="/activeRssBtleSettings"
-      data="{{activeRssBtle}}">
-    </firebase-document>
-    <firebase-document
-      path="/activeTofBtHciSettings"
-      data="{{activeTofBtHci}}">
-    </firebase-document>
-    <firebase-document
-      path="/activeTofBtJavaSettings"
-      data="{{activeTofBtJava}}">
-    </firebase-document>
+    <neon-animated-pages selected="[[routeData.page]]" attr-for-selected="name">
+      <neon-animatable name="settings">
+        <ranging-settings auth="[[auth]]"></ranging-settings>
+      </neon-animatable>
+      <neon-animatable name="samples">
+        <ranging-samples auth="[[auth]]" route="[[subroute]]"></ranging-samples>
+      </neon-animatable>
+    </neon-animated-pages>
     
-    <paper-material>
-      <div class="font-headline align-center">
-        Ranging
-      </div>
-    </paper-material>
-
-    <paper-material>
-      <iron-collapse-button>
-        <div slot="collapse-trigger" class="font-title flex">Create Settings</div>
-        <ranging-settings slot="collapse-content" auth="[[auth]]"></ranging-settings>
-      </iron-collapse-button>
-    </paper-material>
-    
-    <!-- WiFi 4g -->
-    <paper-material>
-      <iron-collapse-button opened>
-        <div slot="collapse-trigger" class="flex font-title">
-          WiFi 2.4GHz
-        </div>
-        <div slot="collapse-content">
-          <iron-list
-            id="wifi4gList"
-            items="[[rssWifi4g]]">
-            <template>
-                <div class$="list-item [[_isEqual(activeRssWifi4g, item.$key)]]">
-                  <div class="layout horizontal center justified wrap">
-                    <span>[[item.samples]] samp</span>
-                    <span>[[item.dropHigh]] dH</span>
-                    <span>[[item.dropLow]] dL</span>
-                    <span>[[item.method]]</span>
-                    <span>[[item.inputs]] in</span>
-                    <span>[[item.hidden]] hid</span>
-                    <span>[[item.maxRange]] max</span>
-                  </div>
-                  <a href="javascript:" hidden$="[[_isEqual(activeRssWifi4g, item.$key)]]"
-                    on-tap="_activate" data-name="activeRssWifi4g"
-                    data-value$="[[item.$key]]">activate</a>
-                  <div class="weights">[[item.weights]]</div>
-                </div>
-            </template>
-          </iron-list>
-        </div>
-      </iron-collapse-button>
-    </paper-material>
-    
-    <!-- WiFi 5g -->
-    <paper-material>
-      <iron-collapse-button opened>
-        <div slot="collapse-trigger" class="flex font-title">
-          WiFi 5GHz
-        </div>
-        <div slot="collapse-content">
-          <iron-list
-            id="wifi5gList"
-            items="[[rssWifi5g]]">
-            <template>
-                <div class$="list-item [[_isEqual(activeRssWifi5g, item.$key)]]">
-                  <div class="layout horizontal center justified wrap">
-                    <span>[[item.samples]] samp</span>
-                    <span>[[item.dropHigh]] dH</span>
-                    <span>[[item.dropLow]] dL</span>
-                    <span>[[item.method]]</span>
-                    <span>[[item.inputs]] in</span>
-                    <span>[[item.hidden]] hid</span>
-                    <span>[[item.maxRange]] max</span>
-                  </div>
-                  <a href="javascript:" hidden$="[[_isEqual(activeRssWifi5g, item.$key)]]"
-                    on-tap="_activate" data-name="activeRssWifi5g"
-                    data-value$="[[item.$key]]">activate</a>
-                  <div class="weights">[[item.weights]]</div>
-                </div>
-            </template>
-          </iron-list>
-        </div>
-      </iron-collapse-button>
-    </paper-material>
-
-    <!-- Bt RSS -->
-    <paper-material>
-      <iron-collapse-button opened>
-        <div slot="collapse-trigger" class="flex font-title">
-          Bluetooth
-        </div>
-        <div slot="collapse-content">
-          <iron-list
-            id="btList"
-            items="[[rssBt]]">
-            <template>
-                <div class$="list-item [[_isEqual(activeRssBt, item.$key)]]">
-                  <div class="layout horizontal center justified wrap">
-                    <span>[[item.samples]] samp</span>
-                    <span>[[item.dropHigh]] dH</span>
-                    <span>[[item.dropLow]] dL</span>
-                    <span>[[item.method]]</span>
-                    <span>[[item.inputs]] in</span>
-                    <span>[[item.hidden]] hid</span>
-                    <span>[[item.maxRange]] max</span>
-                  </div>
-                  <a href="javascript:" hidden$="[[_isEqual(activeRssBt, item.$key)]]"
-                    on-tap="_activate" data-name="activeRssBt"
-                    data-value$="[[item.$key]]">activate</a>
-                  <div class="weights">[[item.weights]]</div>
-                </div>
-            </template>
-          </iron-list>
-        </div>
-      </iron-collapse-button>
-    </paper-material>
-
-    <!-- Btle -->
-    <paper-material>
-      <iron-collapse-button opened>
-        <div slot="collapse-trigger" class="flex font-title">
-          Bluetooth LE
-        </div>
-        <div slot="collapse-content">
-          <iron-list
-            id="btleList"
-            items="[[rssBtle]]">
-            <template>
-                <div class$="list-item [[_isEqual(activeRssBtle, item.$key)]]">
-                  <div class="layout horizontal center justified wrap">
-                    <span>[[item.samples]] samp</span>
-                    <span>[[item.dropHigh]] dH</span>
-                    <span>[[item.dropLow]] dL</span>
-                    <span>[[item.method]]</span>
-                    <span>[[item.inputs]] in</span>
-                    <span>[[item.hidden]] hid</span>
-                    <span>[[item.maxRange]] max</span>
-                  </div>
-                  <a href="javascript:" hidden$="[[_isEqual(activeRssBtle, item.$key)]]"
-                    on-tap="_activate" data-name="activeRssBtle"
-                    data-value$="[[item.$key]]">activate</a>
-                  <div class="weights">[[item.weights]]</div>
-                </div>
-            </template>
-          </iron-list>
-        </div>
-      </iron-collapse-button>
-    </paper-material>
-    
-    <!-- BT HCI -->
-    <paper-material>
-      <iron-collapse-button opened>
-        <div slot="collapse-trigger" class="flex font-title">
-          Bluetooth HCI
-        </div>
-        <div slot="collapse-content">
-          <iron-list
-            id="btHciList"
-            items="[[tofBtHci]]">
-            <template>
-                <div class$="list-item [[_isEqual(activeTofBtHci, item.$key)]]">
-                  <div class="layout horizontal center justified wrap">
-                    <span>[[item.samples]] samp</span>
-                    <span>[[item.dropHigh]] dH</span>
-                    <span>[[item.dropLow]] dL</span>
-                    <span>[[item.method]]</span>
-                    <span>[[item.inputs]] in</span>
-                    <span>[[item.hidden]] hid</span>
-                    <span>[[item.maxRange]] max</span>
-                  </div>
-                  <a href="javascript:" hidden$="[[_isEqual(activeTofBtHci, item.$key)]]"
-                    on-tap="_activate" data-name="activeTofBtHci"
-                    data-value$="[[item.$key]]">activate</a>
-                  <div class="weights">[[item.weights]]</div>
-                </div>
-            </template>
-          </iron-list>
-        </div>
-      </iron-collapse-button>
-    </paper-material>
-
-    <!-- BT Java -->
-    <paper-material>
-      <iron-collapse-button opened>
-        <div slot="collapse-trigger" class="flex font-title">
-          Bluetooth Java
-        </div>
-        <div slot="collapse-content">
-          <iron-list
-            id="btJavaList"
-            items="[[tofBtJava]]">
-            <template>
-                <div class$="list-item [[_isEqual(activeTofBtJava, item.$key)]]">
-                  <div class="layout horizontal center justified wrap">
-                    <span>[[item.samples]] samp</span>
-                    <span>[[item.dropHigh]] dH</span>
-                    <span>[[item.dropLow]] dL</span>
-                    <span>[[item.method]]</span>
-                    <span>[[item.inputs]] in</span>
-                    <span>[[item.hidden]] hid</span>
-                    <span>[[item.maxRange]] max</span>
-                  </div>
-                  <a href="javascript:" hidden$="[[_isEqual(activeTofBtJava, item.$key)]]"
-                    on-tap="_activate" data-name="activeTofBtJava"
-                    data-value$="[[item.$key]]">activate</a>
-                  <div class="weights">[[item.weights]]</div>
-                </div>
-            </template>
-          </iron-list>
-        </div>
-      </iron-collapse-button>
-    </paper-material>
   </template>
 
   <script>
   Polymer({
     is: 'ranging-page',
     properties: {
-      auth: Object
+      auth: Object,
+      route: Object
     },
     
-    // TODO behavior
-    _isEqual: function(a, b) {
-      // LOG && log.v('isEqual:', a, b);
-      return a == b;
-    },
+    observers: [
+      '_pageChanged(routeData.page)'
+    ],
     
-    _activate: function(e) {
-      // LOG && log.v('activate:', e);
-      var el = e.srcElement || e.target;
-      var name = el.dataset.name;
-      var value = el.dataset.value;
-      showConfirmDialog('Change active settings?', '', 'Confirm', 'Cancel', function(confirmed) {
-        if (confirmed) {
-          this[name] = value;
-        }
-      }.bind(this));
+    _pageChanged: function(page) {
+      if (!hasChild(this.route, 'prefix') || this.route.prefix != '/ranging') {
+        return;
+      }
+
+      var file = this._fileForPage(page);
+      if (!page || !file) {
+        redirect('/ranging/settings');
+        return;
+      }
+
+      var url = this.resolveUrl(file);
+      this.importHref(url, function() {
+        ROUTE && log.v('imported', url);
+        // this._fixListOverlap(page);
+      }.bind(this), function() {
+        LOG && log.e('failed to import', url);
+      }, true);
+      // this._fixListOverlap(page);
+    },
+
+
+    _fileForPage: function(page) {
+      switch (page) {
+        case 'settings':      return '/src/pages/ranging/ranging-settings.html';
+        case 'samples':      return '/src/pages/ranging/ranging-samples.html';
+      }
     }
   });
   </script>

@@ -1,0 +1,162 @@
+<link rel="import" href="../../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../../header.html">
+
+<dom-module id="ranging-samples">
+  <template>
+
+    <style include="app-styles">
+      :host {
+        display: block;
+      }
+      iron-list {
+        @apply --font-small;
+      }
+      .list-item {
+
+      }
+      .device-id {
+        @apply --font-tiny;
+      }
+      .rss {
+
+      }
+      .freq {
+
+      }
+      .width {
+
+      }
+      .dist {
+
+      }
+    </style>
+    
+    <app-route
+      route="[[route]]"
+      pattern="/:type"
+      data="{{routeData}}"
+      tail="{{subroute}}">
+    </app-route>
+    
+    <app-route
+      route="[[subroute]]"
+      pattern="/:key"
+      data="{{subrouteData}}"
+      tail="{{subsubroute}}">
+    </app-route>
+
+    <firebase-query
+      path="/[[routeData.type]]/[[subrouteData.key]]"
+      data="{{samples}}"
+      limit-to-last="100">
+    </firebase-query>
+
+    
+    <paper-material>
+      <div class="font-title align-center">
+        [[routeData.type]] Samples
+      </div>
+        
+      <!--Wifi types-->
+      <template is="dom-if" if="[[_isWifi(routeData.type)]]">
+        <iron-list
+          id="wifiList"
+          scoll-target="document"
+          items="[[samples]]">
+          <template>
+              <div class="list-item layout horizontal center justified wrap">
+                <span class="device-id">[[_shortenId(item.id1)]]</span>
+                <span class="device-id">[[_shortenId(item.id2)]]</span>
+                <span class="rss">[[item.rss]] dBm</span>
+                <span class="freq">[[item.freq]] MHz</span>
+                <span class="width">[[item.width]] MHz</span>
+                <span class="dist">[[round(item.dist)]] m</span>
+                <span class="range">[[round(item.range)]] m</span>
+                <span class="fspl">[[round(item.fspl)]] m</span>
+              </div>
+          </template>
+        </iron-list>
+      </template>
+      
+      <!-- Btle -->
+      <template is="dom-if" if="[[_isBtle(routeData.type)]]">
+        <iron-list
+          id="btleList"
+          scoll-target="document"
+          items="[[samples]]">
+          <template>
+              <div class="list-item layout horizontal center justified wrap">
+                <span class="device-id">[[_shortenId(item.id1)]]</span>
+                <span class="device-id">[[_shortenId(item.id2)]]</span>
+                <span class="rss">[[item.rss]] dBm</span>
+                <span class="txPower">[[item.txPower]] dBm</span>
+                <span class="dist">[[round(item.dist)]] m</span>
+                <span class="range">[[round(item.range)]] m</span>
+                <span class="fspl">[[round(item.fspl)]] m</span>
+              </div>
+          </template>
+        </iron-list>
+      </template>
+    
+    
+      <!-- Bt types -->
+      <template is="dom-if" if="[[_isBt(routeData.type)]]">
+        <iron-list
+          id="btleList"
+          scoll-target="document"
+          items="[[samples]]">
+          <template>
+              <div class="list-item layout horizontal center justified wrap">
+                <span class="device-id">[[_shortenId(item.id1)]]</span>
+                <span class="device-id">[[_shortenId(item.id2)]]</span>
+                <span hidden$="[[_isTof(routeData.type]]" class="rss">[[item.rss]] dBm</span>
+                <span hidden$="[[!_isTof(routeData.type]]" class="tof">[[item.tof]] ns</span>
+                <span class="dist">[[round(item.dist)]] m</span>
+                <span class="range">[[round(item.range)]] m</span>
+                <span hidden$="[[_isTof(routeData.type]]" class="fspl">[[round(item.fspl)]] m</span>
+              </div>
+          </template>
+        </iron-list>
+      </template>
+      
+    </paper-material>
+  </template>
+
+  <script>
+  Polymer({
+    is: 'ranging-samples',
+    properties: {
+      auth: Object,
+      route: Object
+    },
+    notifyResize: function() {
+      this.$.list.notifyResize();
+    },
+    // TODO behavior
+    _round: function(n) {
+      return round(n, 1)
+    },
+
+    _shortenId: function(id) {
+      if (id) return id.slice(0, 2) + '..' + id.slice(-2);
+    },
+    
+    _isTof: function(type) {
+      return type && type.toLowerCase().includes('tof');
+    },
+    _isBt: function(type) {
+      return type && type.toLowerCase().includes('bt') && !this._isBtle(type);
+    },
+    _isBtle: function(type) {
+      return type && type.toLowerCase().includes('btle');
+    },
+    _isWifi: function(type) {
+      return type && type.toLowerCase().includes('wifi');
+    },
+
+  });
+  </script>
+
+</dom-module>
