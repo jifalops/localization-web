@@ -43,12 +43,11 @@ type RangingSettings {
   hidden: NnHidden
   maxRange: MaxRange
   weights: NnWeights
-  read() { true }
   write() { amModerator() }
 }
 
 type RangingSettingsRef extends FirebaseKey {
-  read() { amAuthed() }
+  read() { true }
   write() { amModerator() }
 }
 
