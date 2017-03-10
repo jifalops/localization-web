@@ -1,243 +1,302 @@
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../../bower_components/paper-input/paper-textarea.html">
-<link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
-<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../../bower_components/iron-collapse-button/iron-collapse-button.html">
+<link rel="import" href="../../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../header.html">
+<link rel="import" href="ranging-settings.html">
 
 <dom-module id="ranging-page">
   <template>
     <style include="app-styles">
       :host {
         display: block;
+        /*@apply --font-small;*/
+      }
+      iron-list {
+        height: calc(100vh - 296px);
+        max-height: 200px;
         @apply --font-small;
       }
-      paper-dropdown-menu {
-        width: 10em;
-        --paper-input-container-input: {
-          text-align: center;
-          @apply --font-small;
-        };
-        --paper-input-container-label: {
-          text-align: center;
-          @apply --font-small;
-        };
-        --iron-icon-width: 16px;
-        --iron-icon-height: 16px;
-      }
-      paper-input {
-        display: inline-block;
-        width: 4em;
-        --paper-input-container-label: {
-          @apply --font-small;
-          text-align: center;
-        };
-        --paper-input-container-input: {
-          @apply --font-small;
-          text-align: center;
-        };
-      }
-      paper-item {
-        --paper-item: {
-          @apply --font-small;
-          text-align: center;
-        };
-      }
-      paper-textarea {
-        --paper-input-container-label: {
-          @apply --font-small;
-        };
-        --paper-input-container-input: {
-          @apply --font-small;
-        };
-      }
-      paper-checkbox {
-        --paper-checkbox-size: 14px;
-        --paper-checkbox-label-spacing: 4px;
+      iron-collapse-button {
+        margin-top: 24px;
         @apply --font-small;
-        margin: 8px 0 16px;
+      }
+      .list-item {
+        @apply --font-small;
+        padding: 4px 2px;
+      }
+      .list-item.true {
+        background-color: var(--success-bg-color);
+      }
+      .list-item a {
+        float: right;
+      }
+      .weights {
+        @apply --font-tiny;
       }
     </style>
+    
+    <firebase-query
+      path="/rssWifi4gSettings"
+      data="{{rssWifi4g}}"
+      limit-to-last="100">
+    </firebase-query>
+    <firebase-query
+      path="/rssWifi5gSettings"
+      data="{{rssWifi5g}}"
+      limit-to-last="100">
+    </firebase-query>
+    <firebase-query
+      path="/rssBtSettings"
+      data="{{rssBt}}"
+      limit-to-last="100">
+    </firebase-query>
+    <firebase-query
+      path="/rssBtleSettings"
+      data="{{rssBtle}}"
+      limit-to-last="100">
+    </firebase-query>
+    <firebase-query
+      path="/tofBtHciSettings"
+      data="{{tofBtHci}}"
+      limit-to-last="100">
+    </firebase-query>
+    <firebase-query
+      path="/tofBtJavaSettings"
+      data="{{tofBtJava}}"
+      limit-to-last="100">
+    </firebase-query>
+    
+    <firebase-document
+      path="/activeRssWifi4gSettings"
+      data="{{activeRssWifi4g}}">
+    </firebase-document>
+    <firebase-document
+      path="/activeRssWifi5gSettings"
+      data="{{activeRssWifi5g}}">
+    </firebase-document>
+    <firebase-document
+      path="/activeRssBtSettings"
+      data="{{activeRssBt}}">
+    </firebase-document>
+    <firebase-document
+      path="/activeRssBtleSettings"
+      data="{{activeRssBtle}}">
+    </firebase-document>
+    <firebase-document
+      path="/activeTofBtHciSettings"
+      data="{{activeTofBtHci}}">
+    </firebase-document>
+    <firebase-document
+      path="/activeTofBtJavaSettings"
+      data="{{activeTofBtJava}}">
+    </firebase-document>
+    
     <paper-material>
       <div class="font-headline align-center">
         Ranging
       </div>
     </paper-material>
 
-    <paper-material hidden$="[[auth.user.isElevated]]" class="bgcolor-warning">
-        You must have elevated permissions to modify the app's neural network settings.<br/>
-        If you do have access you can elevate on your profile page.
+    <paper-material>
+      <iron-collapse-button>
+        <div slot="collapse-trigger" class="font-title flex">Create Settings</div>
+        <ranging-settings slot="collapse-content" auth="[[auth]]"></ranging-settings>
+      </iron-collapse-button>
+    </paper-material>
+    
+    <!-- WiFi 4g -->
+    <paper-material>
+      <iron-collapse-button opened>
+        <div slot="collapse-trigger" class="flex font-title">
+          WiFi 2.4GHz
+        </div>
+        <div slot="collapse-content">
+          <iron-list
+            id="wifi4gList"
+            items="[[rssWifi4g]]">
+            <template>
+                <div class$="list-item [[_isEqual(activeRssWifi4g, item.$key)]]">
+                  <div class="layout horizontal center justified wrap">
+                    <span>[[item.samples]] samp</span>
+                    <span>[[item.dropHigh]] dH</span>
+                    <span>[[item.dropLow]] dL</span>
+                    <span>[[item.method]]</span>
+                    <span>[[item.inputs]] in</span>
+                    <span>[[item.hidden]] hid</span>
+                    <span>[[item.maxRange]] max</span>
+                  </div>
+                  <a href="javascript:" hidden$="[[_isEqual(activeRssWifi4g, item.$key)]]"
+                    on-tap="_activate" data-name="activeRssWifi4g"
+                    data-value$="[[item.$key]]">activate</a>
+                  <div class="weights">[[item.weights]]</div>
+                </div>
+            </template>
+          </iron-list>
+        </div>
+      </iron-collapse-button>
+    </paper-material>
+    
+    <!-- WiFi 5g -->
+    <paper-material>
+      <iron-collapse-button opened>
+        <div slot="collapse-trigger" class="flex font-title">
+          WiFi 5GHz
+        </div>
+        <div slot="collapse-content">
+          <iron-list
+            id="wifi5gList"
+            items="[[rssWifi5g]]">
+            <template>
+                <div class$="list-item [[_isEqual(activeRssWifi5g, item.$key)]]">
+                  <div class="layout horizontal center justified wrap">
+                    <span>[[item.samples]] samp</span>
+                    <span>[[item.dropHigh]] dH</span>
+                    <span>[[item.dropLow]] dL</span>
+                    <span>[[item.method]]</span>
+                    <span>[[item.inputs]] in</span>
+                    <span>[[item.hidden]] hid</span>
+                    <span>[[item.maxRange]] max</span>
+                  </div>
+                  <a href="javascript:" hidden$="[[_isEqual(activeRssWifi5g, item.$key)]]"
+                    on-tap="_activate" data-name="activeRssWifi5g"
+                    data-value$="[[item.$key]]">activate</a>
+                  <div class="weights">[[item.weights]]</div>
+                </div>
+            </template>
+          </iron-list>
+        </div>
+      </iron-collapse-button>
     </paper-material>
 
+    <!-- Bt RSS -->
     <paper-material>
-      <div class="font-title">Neural Network Settings</div>
-      <p class="font-small"><a href="https://github.com/jifalops/localization#refiningparams-from-database"
-        >Read more</a></p>
-      <paper-dropdown-menu
-        id="type"
-        label="Signal Type"
-        no-animations
-        required
-        auto-validate
-        noink>
-        <paper-listbox
-          class="dropdown-content"
-          attr-for-selected="value"
-          selected="{{type}}">
-          <paper-item value="rssWifi4gSettings">WiFi 2.4 GHz RSS</paper-item>
-          <paper-item value="rssWifi5gSettings">WiFi 5 GHz RSS</paper-item>
-          <paper-item value="rssBtSettings">Bluetooth RSS</paper-item>
-          <paper-item value="rssBtleSettings">Bluetooth LE RSS</paper-item>
-          <paper-item value="tofBtHciSettings">Bluetooth HCI TOF</paper-item>
-          <paper-item value="tofBtJavaSettings">Bluetooth Java TOF</paper-item>
-        </paper-listbox>
-      </paper-dropdown-menu><br />
-      
-      Collect
-      
-      <paper-input
-        id="samples"
-        label="1-100"
-        required
-        auto-validate
-        type="number"
-        min="1"
-        max="100"
-        value="5">
-      </paper-input>
-      
-      samples,<br/> drop
-      
-      <paper-input
-        id="dropHigh"
-        label="0-10"
-        required
-        auto-validate
-        type="number"
-        min="0"
-        max="10"
-        value="1">
-      </paper-input>
-      
-      of the highest, <br/> and
-      
-      <paper-input
-        id="dropLow"
-        label="0-10"
-        required
-        auto-validate
-        type="number"
-        min="0"
-        max="10"
-        value="1">
-      </paper-input>
-      
-      of the lowest. <br/> Then apply
-      
-      <paper-dropdown-menu
-        id="method"
-        label="method"
-        no-animations
-        required
-        auto-validate
-        noink>
-        <paper-listbox
-          class="dropdown-content"
-          attr-for-selected="value"
-          selected="{{method}}">
-          <paper-item value="median">median</paper-item>
-          <paper-item value="mean">mean</paper-item>
-          <paper-item value="min">min</paper-item>
-          <paper-item value="max">max</paper-item>
-        </paper-listbox>
-      </paper-dropdown-menu>
-      
-      to refine the samples down to one.
-      
-      <p>Finally, calculate the range using these neural network settings.</p>
-      
-      <paper-dropdown-menu
-        hidden$="[[isBt]]"
-        id="wifiInputs"
-        label="Inputs"
-        no-animations
-        required
-        auto-validate
-        noink>
-        <paper-listbox
-          class="dropdown-content"
-          attr-for-selected="value"
-          selected="{{wifiInputs}}">
-          <paper-item value="1">RSS</paper-item>
-          <paper-item value="2">RSS, freq</paper-item>
-          <paper-item value="3">RSS, freq, width</paper-item>
-        </paper-listbox>
-      </paper-dropdown-menu>
-      <paper-dropdown-menu
-        hidden$="[[!isBtle]]"
-        id="btleInputs"
-        label="Inputs"
-        no-animations
-        required
-        auto-validate
-        noink>
-        <paper-listbox
-          class="dropdown-content"
-          attr-for-selected="value"
-          selected="{{btleInputs}}">
-          <paper-item value="1">RSS</paper-item>
-          <paper-item value="2">RSS, TX Power</paper-item>
-        </paper-listbox>
-      </paper-dropdown-menu>
-      
-      <span hidden="[[!_hasOneInput(isBt, isBtle)]]">1 input</span>
-      
-      <paper-input
-        id="hiddenNeurons"
-        label="Hidden neurons"
-        required
-        auto-validate
-        type="number"
-        min="1"
-        max="10"
-        value="1">
-      </paper-input>
-      <paper-input
-        hidden$="[[isBt]]"
-        id="wifiMaxRange"
-        label="Max range"
-        required
-        auto-validate
-        type="number"
-        min="10"
-        max="100"
-        value="100">
-      </paper-input>
-      <paper-input
-        hidden$="[[!isBt]]"
-        id="btMaxRange"
-        label="Max range"
-        required
-        auto-validate
-        type="number"
-        min="5"
-        max="20"
-        value="10">
-      </paper-input>m
-      
-      <paper-textarea
-        id="weights"
-        required
-        char-counter
-        label="Weights (comma delimited, no spaces or quotes)"
-        minlength="7"
-        maxlength="1000">
-      </paper-textarea>
-      <paper-checkbox checked="{{activate}}">Make these the active settings</paper-checkbox><br/>
-      <paper-button class="primary-button" raised on-tap="_createSettings">Create</paper-button>
+      <iron-collapse-button opened>
+        <div slot="collapse-trigger" class="flex font-title">
+          Bluetooth
+        </div>
+        <div slot="collapse-content">
+          <iron-list
+            id="btList"
+            items="[[rssBt]]">
+            <template>
+                <div class$="list-item [[_isEqual(activeRssBt, item.$key)]]">
+                  <div class="layout horizontal center justified wrap">
+                    <span>[[item.samples]] samp</span>
+                    <span>[[item.dropHigh]] dH</span>
+                    <span>[[item.dropLow]] dL</span>
+                    <span>[[item.method]]</span>
+                    <span>[[item.inputs]] in</span>
+                    <span>[[item.hidden]] hid</span>
+                    <span>[[item.maxRange]] max</span>
+                  </div>
+                  <a href="javascript:" hidden$="[[_isEqual(activeRssBt, item.$key)]]"
+                    on-tap="_activate" data-name="activeRssBt"
+                    data-value$="[[item.$key]]">activate</a>
+                  <div class="weights">[[item.weights]]</div>
+                </div>
+            </template>
+          </iron-list>
+        </div>
+      </iron-collapse-button>
+    </paper-material>
+
+    <!-- Btle -->
+    <paper-material>
+      <iron-collapse-button opened>
+        <div slot="collapse-trigger" class="flex font-title">
+          Bluetooth LE
+        </div>
+        <div slot="collapse-content">
+          <iron-list
+            id="btleList"
+            items="[[rssBtle]]">
+            <template>
+                <div class$="list-item [[_isEqual(activeRssBtle, item.$key)]]">
+                  <div class="layout horizontal center justified wrap">
+                    <span>[[item.samples]] samp</span>
+                    <span>[[item.dropHigh]] dH</span>
+                    <span>[[item.dropLow]] dL</span>
+                    <span>[[item.method]]</span>
+                    <span>[[item.inputs]] in</span>
+                    <span>[[item.hidden]] hid</span>
+                    <span>[[item.maxRange]] max</span>
+                  </div>
+                  <a href="javascript:" hidden$="[[_isEqual(activeRssBtle, item.$key)]]"
+                    on-tap="_activate" data-name="activeRssBtle"
+                    data-value$="[[item.$key]]">activate</a>
+                  <div class="weights">[[item.weights]]</div>
+                </div>
+            </template>
+          </iron-list>
+        </div>
+      </iron-collapse-button>
+    </paper-material>
+    
+    <!-- BT HCI -->
+    <paper-material>
+      <iron-collapse-button opened>
+        <div slot="collapse-trigger" class="flex font-title">
+          Bluetooth HCI
+        </div>
+        <div slot="collapse-content">
+          <iron-list
+            id="btHciList"
+            items="[[tofBtHci]]">
+            <template>
+                <div class$="list-item [[_isEqual(activeTofBtHci, item.$key)]]">
+                  <div class="layout horizontal center justified wrap">
+                    <span>[[item.samples]] samp</span>
+                    <span>[[item.dropHigh]] dH</span>
+                    <span>[[item.dropLow]] dL</span>
+                    <span>[[item.method]]</span>
+                    <span>[[item.inputs]] in</span>
+                    <span>[[item.hidden]] hid</span>
+                    <span>[[item.maxRange]] max</span>
+                  </div>
+                  <a href="javascript:" hidden$="[[_isEqual(activeTofBtHci, item.$key)]]"
+                    on-tap="_activate" data-name="activeTofBtHci"
+                    data-value$="[[item.$key]]">activate</a>
+                  <div class="weights">[[item.weights]]</div>
+                </div>
+            </template>
+          </iron-list>
+        </div>
+      </iron-collapse-button>
+    </paper-material>
+
+    <!-- BT Java -->
+    <paper-material>
+      <iron-collapse-button opened>
+        <div slot="collapse-trigger" class="flex font-title">
+          Bluetooth Java
+        </div>
+        <div slot="collapse-content">
+          <iron-list
+            id="btJavaList"
+            items="[[tofBtJava]]">
+            <template>
+                <div class$="list-item [[_isEqual(activeTofBtJava, item.$key)]]">
+                  <div class="layout horizontal center justified wrap">
+                    <span>[[item.samples]] samp</span>
+                    <span>[[item.dropHigh]] dH</span>
+                    <span>[[item.dropLow]] dL</span>
+                    <span>[[item.method]]</span>
+                    <span>[[item.inputs]] in</span>
+                    <span>[[item.hidden]] hid</span>
+                    <span>[[item.maxRange]] max</span>
+                  </div>
+                  <a href="javascript:" hidden$="[[_isEqual(activeTofBtJava, item.$key)]]"
+                    on-tap="_activate" data-name="activeTofBtJava"
+                    data-value$="[[item.$key]]">activate</a>
+                  <div class="weights">[[item.weights]]</div>
+                </div>
+            </template>
+          </iron-list>
+        </div>
+      </iron-collapse-button>
     </paper-material>
   </template>
 
@@ -245,81 +304,24 @@
   Polymer({
     is: 'ranging-page',
     properties: {
-      auth: Object,
-      isTof: {
-        type: Boolean,
-        value: false,
-        computed: '_isTof(type)'
-      },
-      isBt: {
-        type: Boolean,
-        value: false,
-        computed: '_isBt(type)'
-      },
-      isBtle: {
-        type: Boolean,
-        value: false,
-        computed: '_isBtle(type)'
-      }
-    },
-
-    _createSettings: function() {
-      if (this.auth && this._validate()) {
-        var samples = Number(this.$.samples.value);
-        var dropHigh = Number(this.$.dropHigh.value);
-        var dropLow = Number(this.$.dropLow.value);
-        var inputs = Number(this.isBt ? (this.isBtle ? this.btleInputs : 1) : this.wifiInputs);
-        var hidden = Number(this.$.hiddenNeurons.value);
-        var maxRange = Number(this.isBt ? this.$.btMaxRange.value : this.$.wifiMaxRange.value);
-        var weights = this.$.weights.value;
-        LOG && log.v(this.type, samples, dropHigh, dropLow, this.method, inputs, hidden, maxRange, this.activate, weights);
-        
-        var settings = {
-          samples: samples,
-          dropHigh: dropHigh,
-          dropLow: dropLow,
-          method: this.method,
-          inputs: inputs,
-          hidden: hidden,
-          maxRange: maxRange,
-          weights: weights
-        };
-        var key = db.ranging.createSettings(this.auth.uid, this.type, settings, function() {
-          if (this.activate) {
-            db.ranging.activateSettings(this.auth.uid, 'active' + ucFirst(this.type), key, function() {
-              showSuccessToast('Settings activated');
-            }, showServerErrorToast);
-          } else {
-            showSuccessToast('Settings created');
-          }
-        }.bind(this), showServerErrorToast);
-      }
-    },
-
-    _isTof: function(type) {
-      return type && type.toLowerCase().includes('tof');
-    },
-    _isBt: function(type) {
-      return type && type.toLowerCase().includes('bt');
-    },
-    _isBtle: function(type) {
-      return type && type.toLowerCase().includes('btle');
-    },
-    _hasOneInput: function(isBt, isBtle) {
-      return isBt && !isBtle;
+      auth: Object
     },
     
-    _validate: function() {
-      return this.$.type.validate()
-        && this.$.samples.validate()
-        && this.$.dropHigh.validate()
-        && this.$.dropLow.validate()
-        && (this.$.wifiInputs.validate() || this.$.btleInputs.validate() || (this.isBt && !this.isBtle))
-        && this.$.hiddenNeurons.validate()
-        && (this.$.wifiMaxRange.validate() || this.$.btMaxRange.validate())
-        && this.$.weights.validate()
-        && this.type
-        && this.method;
+    // TODO behavior
+    _isEqual: function(a, b) {
+      return a == b;
+    },
+    
+    _activate: function(e) {
+      // LOG && log.v('activate:', e);
+      var el = e.srcElement || e.target;
+      var name = el.dataset.name;
+      var value = el.dataset.value;
+      showConfirmDialog('Change active settings?', '', 'Confirm', 'Cancel', function(confirmed) {
+        if (confirmed) {
+          this[name] = value;
+        }
+      }.bind(this));
     }
   });
   </script>
