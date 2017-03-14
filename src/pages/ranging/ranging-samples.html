@@ -17,7 +17,7 @@
 
       }
       .device-id {
-        @apply --font-tiny;
+        /*@apply --font-tiny;*/
       }
       .rss {
 
@@ -72,9 +72,9 @@
                 <span class="rss">[[item.rss]] dBm</span>
                 <span class="freq">[[item.freq]] MHz</span>
                 <span class="width">[[item.width]] MHz</span>
-                <span class="dist">[[round(item.dist)]] m</span>
-                <span class="range">[[round(item.range)]] m</span>
-                <span class="fspl">[[round(item.fspl)]] m</span>
+                <span class="dist">[[_round(item.dist)]] m</span>
+                <span class="range">[[_round(item.range)]] m</span>
+                <span class="fspl">[[_round(item.fspl)]] m</span>
               </div>
           </template>
         </iron-list>
@@ -92,9 +92,9 @@
                 <span class="device-id">[[_shortenId(item.id2)]]</span>
                 <span class="rss">[[item.rss]] dBm</span>
                 <span class="txPower">[[item.txPower]] dBm</span>
-                <span class="dist">[[round(item.dist)]] m</span>
-                <span class="range">[[round(item.range)]] m</span>
-                <span class="fspl">[[round(item.fspl)]] m</span>
+                <span class="dist">[[_round(item.dist)]] m</span>
+                <span class="range">[[_round(item.range)]] m</span>
+                <span class="fspl">[[_round(item.fspl)]] m</span>
               </div>
           </template>
         </iron-list>
@@ -113,9 +113,9 @@
                 <span class="device-id">[[_shortenId(item.id2)]]</span>
                 <span hidden$="[[_isTof(routeData.type]]" class="rss">[[item.rss]] dBm</span>
                 <span hidden$="[[!_isTof(routeData.type]]" class="tof">[[item.tof]] ns</span>
-                <span class="dist">[[round(item.dist)]] m</span>
-                <span class="range">[[round(item.range)]] m</span>
-                <span hidden$="[[_isTof(routeData.type]]" class="fspl">[[round(item.fspl)]] m</span>
+                <span class="dist">[[_round(item.dist)]] m</span>
+                <span class="range">[[_round(item.range)]] m</span>
+                <span hidden$="[[_isTof(routeData.type]]" class="fspl">[[_round(item.fspl)]] m</span>
               </div>
           </template>
         </iron-list>

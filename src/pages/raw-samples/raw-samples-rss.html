@@ -24,7 +24,7 @@
 
       }
       .device-id {
-        @apply --font-tiny;
+        /*@apply --font-tiny;*/
       }
       .rss {
 
@@ -78,7 +78,7 @@
                   <span class="rss">[[item.rss]] dBm</span>
                   <span class="freq">[[item.freq]] MHz</span>
                   <span class="width">[[item.width]] MHz</span>
-                  <span class="dist">[[round(item.dist)]] m</span>
+                  <span class="dist">[[_round(item.dist)]] m</span>
                 </div>
             </template>
           </iron-list>
@@ -103,7 +103,7 @@
                   <span class="rss">[[item.rss]] dBm</span>
                   <span class="freq">[[item.freq]] MHz</span>
                   <span class="width">[[item.width]] MHz</span>
-                  <span class="dist">[[round(item.dist)]] m</span>
+                  <span class="dist">[[_round(item.dist)]] m</span>
                 </div>
             </template>
           </iron-list>
@@ -128,7 +128,7 @@
                   <span class="rss">[[item.rss]] dBm</span>
                   <span class="freq">[[item.freq]] MHz</span>
                   <span class="width">[[item.width]] MHz</span>
-                  <span class="dist">[[round(item.dist)]] m</span>
+                  <span class="dist">[[_round(item.dist)]] m</span>
                 </div>
             </template>
           </iron-list>
@@ -153,7 +153,7 @@
                   <span class="rss">[[item.rss]] dBm</span>
                   <span class="freq">[[item.freq]] MHz</span>
                   <span class="width">[[item.width]] MHz</span>
-                  <span class="dist">[[round(item.dist)]] m</span>
+                  <span class="dist">[[_round(item.dist)]] m</span>
                 </div>
             </template>
           </iron-list>

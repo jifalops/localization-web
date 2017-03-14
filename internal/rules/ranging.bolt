@@ -2,11 +2,11 @@
 // ranging.bolt
 //
 
-path /rssWiFi4gRanging/{settings} {
+path /rssWifi4gRanging/{settings} {
   read() { true }
   /{range} is WifiRssRange;
 }
-path /rssWiFi5gRanging/{settings} {
+path /rssWifi5gRanging/{settings} {
   read() { true }
   /{range} is WifiRssRange;
 }
